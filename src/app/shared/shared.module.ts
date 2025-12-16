@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
-import {CommonModule} from "@angular/common";
+import { CommonModule } from "@angular/common";
+import { ChartComponent } from './components/chart/chart.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [ChartComponent],
   imports: [
     CommonModule
   ],
-  exports: []
+  exports: [ChartComponent]
 })
 export class SharedModule {}
 

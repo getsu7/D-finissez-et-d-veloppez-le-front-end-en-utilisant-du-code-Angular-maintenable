@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import {Component, OnInit, inject, OnDestroy} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import Chart from 'chart.js/auto';
-import { OlympicService, Olympic} from '../../core';
+import { OlympicService, Olympic } from '../../core';
+import { ChartConfig } from '../../shared';
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-country',
@@ -15,10 +14,8 @@ export class CountryComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly olympicService = inject(OlympicService);
 
-  // Subject pour gérer le désabonnement automatique
   private readonly destroy$ = new Subject<void>();
-
-  public lineChart!: Chart<'line', number[], number>;
+  public chartConfig: ChartConfig | null = null;
   public titlePage = '';
   public totalEntries = 0;
   public totalMedals = 0;
@@ -27,19 +24,15 @@ export class CountryComponent implements OnInit, OnDestroy {
   public isLoading = true;
 
   ngOnInit(): void {
-    this.loadCountryData();
+    this.init();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-
-    if (this.lineChart) {
-      this.lineChart.destroy();
-    }
   }
 
-  private loadCountryData(): void {
+  private init(): void {
     const countryName = this.route.snapshot.paramMap.get('countryName');
 
     if (!countryName) {
@@ -78,33 +71,21 @@ export class CountryComponent implements OnInit, OnDestroy {
     const years = olympic.participations.map((p) => p.year);
     const medals = olympic.participations.map((p) => p.medalsCount);
 
-    this.buildChart(years, medals);
+    this.buildChartConfig(years, medals);
   }
 
-  private buildChart(years: number[], medals: number[]): void {
-    const lineChart = new Chart('countryChart', {
+  private buildChartConfig(years: number[], medals: number[]): void {
+    this.chartConfig = {
       type: 'line',
-      data: {
-        labels: years,
-        datasets: [
-          {
-            label: 'Medals',
-            data: medals,
-            backgroundColor: '#0b868f',
-            borderColor: '#0b868f',
-            tension: 0.1,
-          },
-        ],
-      },
-      options: {
-        aspectRatio: 2.5,
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    });
-    this.lineChart = lineChart;
+      labels: years,
+      datasets: [{
+        label: 'Medals',
+        data: medals,
+        borderColor: '#0b868f',
+        tension: 0.1,
+      }],
+      aspectRatio: 2.5,
+      clickable: false,
+    };
   }
 }

@@ -7,6 +7,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { CountryComponent } from './pages/country/country.component';
 import { CoreModule } from './core';
+import { SharedModule } from './shared';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, NotFoundComponent, CountryComponent],
@@ -14,6 +15,7 @@ import { CoreModule } from './core';
     BrowserModule,
     AppRoutingModule,
     CoreModule,
+    SharedModule,
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent],

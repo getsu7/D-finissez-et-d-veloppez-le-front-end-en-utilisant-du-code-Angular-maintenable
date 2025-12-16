@@ -1,28 +1,38 @@
-import { Component, OnDestroy, inject} from '@angular/core';
-import {Router} from '@angular/router';
-import Chart from 'chart.js/auto';
-import {OlympicService, Olympic} from '../../core';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import { Router } from '@angular/router';
+import { OlympicService, Olympic } from '../../core';
+import { ChartConfig } from '../../shared';
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnDestroy {
+export class HomeComponent implements OnDestroy, OnInit {
   private readonly router = inject(Router);
   private readonly olympicService = inject(OlympicService);
 
-  public pieChart!: Chart<'pie', number[], string>;
+  private readonly destroy$ = new Subject<void>();
+  public chartConfig: ChartConfig | null = null;
   public totalCountries = 0;
   public totalJOs = 0;
   public error: string | null = null;
   public isLoading = true;
   public titlePage = 'Medals per Country';
 
-  constructor() {
+  ngOnInit() {
+    this.init();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private init() {
     this.olympicService.loadInitialData()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data: Olympic[]) => {
           this.isLoading = false;
@@ -31,7 +41,7 @@ export class HomeComponent implements OnDestroy {
             this.totalCountries = this.olympicService.getTotalCountries();
             const countries = this.olympicService.getCountryNames();
             const medalsPerCountry = this.olympicService.getMedalsPerCountry();
-            this.buildPieChart(countries, medalsPerCountry);
+            this.buildChart(countries, medalsPerCountry);
           }
         },
         error: (error) => {
@@ -41,55 +51,30 @@ export class HomeComponent implements OnDestroy {
       })
   }
 
-  ngOnDestroy(): void {
-    if (this.pieChart) {
-      this.pieChart.destroy();
-    }
+  private buildChart(countries: string[], medalsPerCountry: number[]): void {
+    this.chartConfig = {
+      type: 'pie',
+      labels: countries,
+      datasets: [{
+        label: 'Medals',
+        data: medalsPerCountry,
+        backgroundColor: [
+          '#0b868f',
+          '#adc3de',
+          '#7a3c53',
+          '#8f6263',
+          'orange',
+          '#94819d',
+        ],
+        hoverOffset: 4,
+      }],
+      aspectRatio: 2.5,
+      clickable: true,
+    };
   }
 
-  private buildPieChart(countries: string[], medalsPerCountry: number[]): void {
-    const pieChart = new Chart('DashboardPieChart', {
-      type: 'pie',
-      data: {
-        labels: countries,
-        datasets: [
-          {
-            label: 'Medals',
-            data: medalsPerCountry,
-            backgroundColor: [
-              '#0b868f',
-              '#adc3de',
-              '#7a3c53',
-              '#8f6263',
-              'orange',
-              '#94819d',
-            ],
-            hoverOffset: 4,
-          },
-        ],
-      },
-      options: {
-        aspectRatio: 2.5,
-        onClick: (e) => {
-          if (e.native) {
-            const points = pieChart.getElementsAtEventForMode(
-              e.native,
-              'point',
-              { intersect: true },
-              true
-            );
-            if (points.length) {
-              const firstPoint = points[0];
-              const countryName = pieChart.data.labels
-                ? pieChart.data.labels[firstPoint.index]
-                : '';
-              this.router.navigate(['country', countryName]);
-            }
-          }
-        },
-      },
-    });
-    this.pieChart = pieChart;
+  onChartClick(event: { index: number; label: string | number }): void {
+    this.router.navigate(['country', event.label]);
   }
 }
 
