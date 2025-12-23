@@ -8,11 +8,11 @@ import { Olympic } from '../models';
   providedIn: 'root',
 })
 export class OlympicService {
-  private olympicUrl = './assets/mock/olympic.json';
+  private readonly olympicUrl = './assets/mock/olympic.json';
 
-  private olympics$ = new BehaviorSubject<Olympic[] | null>(null);
+  private readonly olympics$ = new BehaviorSubject<Olympic[] | null>(null);
 
-  private error$ = new BehaviorSubject<string | null>(null);
+  private readonly error$ = new BehaviorSubject<string | null>(null);
 
   constructor(private http: HttpClient) {}
 
