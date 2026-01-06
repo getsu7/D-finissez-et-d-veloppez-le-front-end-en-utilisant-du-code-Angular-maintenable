@@ -1,19 +1,110 @@
-
 .wrapper-container {
     display: flex;
     justify-content: center;
+    padding: 20px;
 }
 
 .container {
-    width: 50%;
-    h2{
+    width: 60%;
+    max-width: 1000px;
+
+    h2 {
         text-align: center;
         color: gray;
+        margin: 30px 0;
+        font-size: 1.5rem;
     }
 }
 
-@media screen and (max-width: 1000px) {
-    .container {
-        width: 100%;
+.center {
+    margin: 30px 0;
+
+    a {
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: #0b868f;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background-color: #096b73;
+        }
     }
 }
+
+@media screen and (max-width: 576px) {
+    .wrapper-container {
+        padding: 10px;
+    }
+
+    .container {
+        width: 100%;
+
+        h2 {
+            font-size: 1.1rem;
+            margin: 20px 0;
+        }
+    }
+
+    .center {
+        margin: 20px 0;
+
+        a {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+}
+
+@media screen and (min-width: 577px) and (max-width: 992px) {
+    .wrapper-container {
+        padding: 15px;
+    }
+
+    .container {
+        width: 85%;
+
+        h2 {
+            font-size: 1.3rem;
+            margin: 25px 0;
+        }
+    }
+
+    .center {
+        margin: 25px 0;
+
+        a {
+            padding: 11px 25px;
+            font-size: 0.95rem;
+        }
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .wrapper-container {
+        padding: 30px;
+    }
+
+    .container {
+        width: 50%;
+        max-width: 1200px;
+
+        h2 {
+            font-size: 1.7rem;
+            margin: 35px 0;
+        }
+    }
+
+    .center {
+        margin: 35px 0;
+
+        a {
+            padding: 14px 35px;
+            font-size: 1.1rem;
+        }
+    }
+}
+
